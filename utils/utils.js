@@ -21,7 +21,7 @@ const utils = {
     userID: /^<@([A-Z0-9]+?)[a-z|._\-]*?>$/g,
     // @rota "[rotation]" assign [@username] [optional handoff message]
     // Assigns a user to a rotation
-    assign: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign) (<@U[A-Z0-9]+?>)(.*)$/g,
+    assign: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign) "(<@U[<@>A-Z0-9,\s]+?>)"(.*)$/g,
     // @rota "[rotation]" assign next [optional handoff message]
     // Assigns a user to a rotation
     'assign next': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign next)(.*)$/g,
@@ -102,6 +102,15 @@ const utils = {
    * @param {object} ct context object
    * @return {Promise<object>} object containing rotation, command, user, data
    */
+  getStaffArray(staffStr) {
+    const cleanStr = staffStr.replace(/,/g, '').replace(/></g, '> <').trim();
+    const arr = cleanStr.split(' ');
+    const noEmpty = arr.filter(item => !!item !== false);   // Remove falsey values
+    const noDupes = new Set(noEmpty);                       // Remove duplicates
+    const cleanArr = [...noDupes];                          // Convert set back to array
+    return cleanArr || [];
+  },
+
   async parseCmd(cmd, e, ct) {
     const cleanText = utils.cleanText(e.text);
     // Match text using regex associated with the passed command
@@ -115,7 +124,8 @@ const utils = {
         return {
           rotation: res[2],
           command: res[3],
-          user: res[4],
+          // user: res[4], // single parsing user
+          staff: this.getStaffArray(res[4]),
           handoff: res[5].trim()
         }
       }
@@ -130,18 +140,10 @@ const utils = {
       // Rotation, command, list of space-separated usermentions
       // Proofed to accommodate use of comma+space separation and minor whitespace typos
       else if (cmd === 'staff') {
-        const getStaffArray = (staffStr) => {
-          const cleanStr = staffStr.replace(/,/g, '').replace(/></g, '> <').trim();
-          const arr = cleanStr.split(' ');
-          const noEmpty = arr.filter(item => !!item !== false);   // Remove falsey values
-          const noDupes = new Set(noEmpty);                       // Remove duplicates
-          const cleanArr = [...noDupes];                          // Convert set back to array
-          return cleanArr || [];
-        };
         return {
           rotation: res[2],
           command: res[3],
-          staff: getStaffArray(res[4])
+          staff: this.getStaffArray(res[4])
         }
       }
       // Rotation, command, parameters
