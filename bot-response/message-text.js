@@ -130,9 +130,16 @@ const msgText = {
   },
   confirmChannelMsg: (rotation, sentByUserID) => {
     if (sentByUserID) {
-      return `:speech_balloon: The on-call user for *${rotation}* has been notified about <@${sentByUserID}>'s message.`;
+      return `:speech_balloon: The on-call users for *${rotation}* has been notified about <@${sentByUserID}>'s message.`;
     } else {
-      return `:speech_balloon: The on-call user for *${rotation}* has been notified.`;
+      return `:speech_balloon: The on-call users for *${rotation}* has been notified.`;
+    }
+  },
+  confirmChannelIssue: (rotation, sentByUserID) => {
+    if (sentByUserID) {
+      return `:speech_balloon: The staff for *${rotation}* has been notified about <@${sentByUserID}>'s message.`;
+    } else {
+      return `:speech_balloon: The staff for *${rotation}* has been notified.`;
     }
   },
   confirmEphemeralMsg: (rotation) => {

@@ -15,6 +15,7 @@ const cmdUnassign = require('./app-mentions/unassign');
 const cmdList = require('./app-mentions/list');
 const cmdHelp = require('./app-mentions/help');
 const cmdMessage = require('./app-mentions/message');
+const cmdIssue = require('./app-mentions/issue');
 // Error handling
 const errHandler = require('./utils/error');
 
@@ -45,6 +46,7 @@ const app_mentions = (app, store) => {
     const isHelp = await utils.isCmd('help', ec.text);
     const isList = await utils.isCmd('list', ec.text);
     const testMessage = await utils.isCmd('message', ec.text);
+    const isIssue = await utils.isCmd('issue', ec.text);
     const isMessage =
       testMessage &&
       !isNew &&
@@ -56,7 +58,8 @@ const app_mentions = (app, store) => {
       !isWho &&
       !isAbout &&
       !isUnassign &&
-      !isDelete;
+      !isDelete &&
+      !isIssue;
 
     // @rota new "[rotation]" [optional description]
     if (isNew) {
@@ -105,6 +108,10 @@ const app_mentions = (app, store) => {
     // @rota help
     else if (isHelp) {
       cmdHelp(app, ec, utils, helpBlocks, msgText, errHandler);
+    }
+    // @rota "[rotation]" issue [message]
+    else if (isIssue) {
+      cmdIssue(app, event, context, ec, utils, store, msgText, errHandler);
     }
     // @rota "[rotation]" free form message for on-call user
     else if (isMessage) {

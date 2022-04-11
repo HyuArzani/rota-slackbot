@@ -47,7 +47,11 @@ const utils = {
     // @rota "[rotation]" any other message
     // Message does not contain a command
     // Sends message text
-    message: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (.*)$/g
+    message: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (.*)$/g,
+    // @rota "[rotation]" issue any other message
+    // Message does not contain a command
+    // Sends message text
+    issue: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (issue)(.*)$/g,
   },
   /**
    * Clean up message text so it can be tested / parsed
@@ -190,6 +194,14 @@ const utils = {
           command: cmd,
           rotation: res[2],
           message: res[3]
+        };
+      }
+      // Rotation, issue
+      else if (cmd === 'issue') {
+        return {
+          command: cmd,
+          rotation: res[2],
+          issue: res[3]
         };
       }
     }
