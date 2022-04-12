@@ -52,6 +52,12 @@ const utils = {
     // Message does not contain a command
     // Sends message text
     issue: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (issue)(.*)$/g,
+    // @rota "[rotation]" assign add [@username]
+    // Adds a user to the assign list
+    'assign add': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign add) "(<@U[<@>A-Z0-9,\s]+?>)"$/g,
+    // @rota "[rotation]" assign remove [@username]
+    // Removes a user from the assign list
+    'assign remove': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign remove) "(<@U[<@>A-Z0-9,\s]+?>)"$/g,
   },
   /**
    * Clean up message text so it can be tested / parsed
@@ -202,6 +208,22 @@ const utils = {
           command: cmd,
           rotation: res[2],
           issue: res[3]
+        };
+      }
+      // Rotation, assign add
+      else if (cmd === 'assign add') {
+        return {
+          command: cmd,
+          rotation: res[2],
+          staff: this.getStaffArray(res[4])
+        };
+      }
+      // Rotation, assign remove
+      else if (cmd === 'assign remove') {
+        return {
+          command: cmd,
+          rotation: res[2],
+          staff: this.getStaffArray(res[4])
         };
       }
     }

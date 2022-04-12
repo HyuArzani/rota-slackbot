@@ -16,6 +16,8 @@ const cmdList = require('./app-mentions/list');
 const cmdHelp = require('./app-mentions/help');
 const cmdMessage = require('./app-mentions/message');
 const cmdIssue = require('./app-mentions/issue');
+const cmdAssignAdd = require('./app-mentions/assign-add');
+const cmdAssignRemove = require('./app-mentions/assign-remove');
 // Error handling
 const errHandler = require('./utils/error');
 
@@ -47,6 +49,8 @@ const app_mentions = (app, store) => {
     const isList = await utils.isCmd('list', ec.text);
     const testMessage = await utils.isCmd('message', ec.text);
     const isIssue = await utils.isCmd('issue', ec.text);
+    const isAssignAdd = await utils.isCmd('assign add', ec.text);
+    const isAssignRemove = await utils.isCmd('assign remove', ec.text);
     const isMessage =
       testMessage &&
       !isNew &&
@@ -59,7 +63,9 @@ const app_mentions = (app, store) => {
       !isAbout &&
       !isUnassign &&
       !isDelete &&
-      !isIssue;
+      !isIssue &&
+      !isAssignAdd &&
+      !isAssignRemove;
 
     // @rota new "[rotation]" [optional description]
     if (isNew) {
@@ -85,7 +91,7 @@ const app_mentions = (app, store) => {
     else if (isAbout) {
       cmdAbout(app, event, context, ec, utils, store, msgText, errHandler);
     }
-    // @rota "[rotation]" assign [@user] [handoff message]
+    // @rota "[rotation]" assign "[@user]" [handoff message]
     else if (isAssign) {
       cmdAssign(app, event, context, ec, utils, store, msgText, errHandler);
     }
@@ -112,6 +118,14 @@ const app_mentions = (app, store) => {
     // @rota "[rotation]" issue [message]
     else if (isIssue) {
       cmdIssue(app, event, context, ec, utils, store, msgText, errHandler);
+    }
+    // @rota "[rotation]" assign add "[@user]"
+    else if (isAssignAdd) {
+      cmdAssignAdd(app, event, context, ec, utils, store, msgText, errHandler);
+    }
+    // @rota "[rotation]" assign remove "[@user]"
+    else if (isAssignRemove) {
+      cmdAssignRemove(app, event, context, ec, utils, store, msgText, errHandler);
     }
     // @rota "[rotation]" free form message for on-call user
     else if (isMessage) {

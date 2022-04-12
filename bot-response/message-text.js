@@ -60,7 +60,21 @@ const msgText = {
   assignConfirm: (usermention, rotation) => {
     return `:information_desk_person: ${usermention} is now on-call for the *${rotation}* rotation.`;
   },
+  assignRemoveConfirm: (usermention, rotation) => {
+    return `:information_desk_person: ${usermention} is no longer on-call for the *${rotation}* rotation.`;
+  },
   assignDMHandoffBlocks: (rotation, link, sentByUserID, channelID, handoffMsg) => {
+    if(!handoffMsg) {
+      return [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": `:telephone: You are now on-call for the *${rotation}* rotation`
+          }
+        },
+      ];
+    }
     return [
       {
         "type": "section",
