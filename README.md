@@ -8,6 +8,8 @@ Rota is a Slack app + bot I wrote for internal company use to manage team rotati
 * `@rota delete "[rotation]"` deletes the rotation completely (use with caution!).
 * `@rota "[rotation]" description [new description]` updates the description for a rotation.
 * `@rota "[rotation]" staff [@user1 @user2 @user3]` adds staff to a rotation; a space-separated list of usernames is expected as a parameter with usernames in the order of desired rotation (rotations with a staff list can be assigned using `assign next`).
+* `@rota "[rotation]" staff add [@user1 @user2 @user3]` adds staff to a rotation; a space-separated list of usernames is expected as a parameter with usernames in the order of desired rotation (rotations with a staff list can be assigned using `assign next`).
+* `@rota "[rotation]" staff remove [@user1 @user2 @user3]` remove staff from a rotation; a space-separated list of usernames is expected as a parameter with usernames in the order of desired rotation (rotations with a staff list can be assigned using `assign next`).
 * `@rota "[rotation]" reset staff` clears a rotation's staff list (use with caution!).
 * `@rota "[rotation]" assign "[@user]" [optional handoff message]` assigns list of users to the rotation and, optionally, sends a DM to them with handoff information; a space-separated list of usernames is expected as a parameter with usernames
 * `@rota "[rotation]" assign add "[@user]"` add users to assigns list rotation; a space-separated list of usernames is expected as a parameter with usernames

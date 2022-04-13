@@ -11,8 +11,8 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
     if (utils.rotationInList(rotation, ec.rotaList)) {
       // If rotation exists, display its information
       const rotationObj = await store.getRotation(rotation);
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.aboutReport(rotation, rotationObj))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.aboutReport(rotation, rotationObj))
       );
       if (!!ec.sentByUserID && ec.sentByUserID !== 'USLACKBOT') {
         // Send ephemeral message with staff (to save notifications)
@@ -23,8 +23,8 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
       }
     } else {
       // If rotation doesn't exist, send message saying nothing changed
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.aboutError(rotation))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.aboutError(rotation))
       );
     }
   }

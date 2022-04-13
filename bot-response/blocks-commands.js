@@ -48,6 +48,20 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
+      "text": ':busts_in_silhouette: `@rota "[rotation-name]" staff add [@user1 @user2 @user3]` *add a staff list* for a rotation. It expects a space-separated list of user mentions. _(Duplicates will be removed)_'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':busts_in_silhouette: `@rota "[rotation-name]" staff remove [@user1 @user2 @user3]` *remove a staff list* for a rotation. It expects a space-separated list of user mentions.'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
       "text": ':ghost: `@rota "[rotation-name]" reset staff` *removes all users* from a rotation staff list. _Use with caution!_'
     }
   },
@@ -55,7 +69,21 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": ':information_desk_person: `@rota "[rotation-name]" assign [@user] [optional handoff message]` *assigns a user to a rotation*. Optionally, I can also deliver handoff information at the start of a rotation.'
+      "text": ':information_desk_person: `@rota "[rotation-name]" assign "[@user]" [optional handoff message]` *assigns a user to a rotation*. Optionally, I can also deliver handoff information at the start of a rotation.'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':information_desk_person: `@rota "[rotation-name]" assign add "[@user]"` *add users to assign list in a rotation*.'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':information_desk_person: `@rota "[rotation-name]" assign remove "[@user]"` *remove users from assign list in a rotation*.'
     }
   },
   {

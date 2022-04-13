@@ -16,8 +16,8 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
       // map staff 1 by 1 to send message to each user
       allStafMention.map(async (usermention) => {
         // Confirm assignment in channel
-        const result = await app.client.chat.postMessage(
-          utils.msgConfig(ec.botToken, ec.channelID, msgText.assignConfirm(usermention, rotation))
+        const result = await app.client.chat.postEphemeral(
+          utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.assignConfirm(usermention, rotation))
         );
         if (!!handoffMsg) {
           // Send DM to newly assigned user notifying them of the handoff message
@@ -37,8 +37,8 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
       })
     } else {
       // If rotation doesn't exist, send message saying so
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.assignError(rotation))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.assignError(rotation))
       );
     }
   }

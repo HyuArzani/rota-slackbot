@@ -17,8 +17,8 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
             if (lastAssigned.indexOf(user) === -1) {
                 lastAssigned.push(user);
                 // Confirm assignment in channel
-                const result = await app.client.chat.postMessage(
-                    utils.msgConfig(ec.botToken, ec.channelID, msgText.assignConfirm(user, rotation))
+                const result = await app.client.chat.postEphemeral(
+                    utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.assignConfirm(user, rotation))
                 );
                 const oncallUserDMChannel = utils.getUserID(user);
                 // Send DM to on-call user notifying them of the message that needs their attention
@@ -31,8 +31,8 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
         const save = await store.saveAssignment(rotation, lastAssigned);
       } else {
         // If rotation doesn't exist, send message saying so
-        const result = await app.client.chat.postMessage(
-          utils.msgConfig(ec.botToken, ec.channelID, msgText.assignError(rotation))
+        const result = await app.client.chat.postEphemeral(
+          utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.assignError(rotation))
         );
       }
     }

@@ -14,8 +14,8 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
       
       if (!!oncallUser) {
         // Send message to the channel where help was requested notifying that assigned user was contacted
-        const sendChannelMsg = await app.client.chat.postMessage(
-          utils.msgConfig(ec.botToken, ec.channelID, msgText.confirmChannelMsg(rotation, ec.sentByUserID))
+        const sendChannelMsg = await app.client.chat.postEphemeral(
+          utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.confirmChannelMsg(rotation, ec.sentByUserID))
         );
         if (!!ec.sentByUserID && ec.sentByUserID !== 'USLACKBOT') {
           // Send ephemeral message (only visible to sender) telling them what to do if urgent
@@ -35,14 +35,14 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
         });
       } else {
         // Rotation is not assigned; give instructions how to assign
-        const result = await app.client.chat.postMessage(
-          utils.msgConfig(ec.botToken, ec.channelID, msgText.nobodyAssigned(rotation))
+        const result = await app.client.chat.postEphemeral(
+          utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.nobodyAssigned(rotation))
         );
       }
     } else {
       // Rotation doesn't exist
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.msgError(rotation))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.msgError(rotation))
       );
     }
   }

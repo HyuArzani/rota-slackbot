@@ -18,6 +18,8 @@ const cmdMessage = require('./app-mentions/message');
 const cmdIssue = require('./app-mentions/issue');
 const cmdAssignAdd = require('./app-mentions/assign-add');
 const cmdAssignRemove = require('./app-mentions/assign-remove');
+const cmdStaffAdd = require('./app-mentions/staff-add');
+const cmdStaffRemove = require('./app-mentions/staff-remove');
 // Error handling
 const errHandler = require('./utils/error');
 
@@ -51,6 +53,8 @@ const app_mentions = (app, store) => {
     const isIssue = await utils.isCmd('issue', ec.text);
     const isAssignAdd = await utils.isCmd('assign add', ec.text);
     const isAssignRemove = await utils.isCmd('assign remove', ec.text);
+    const isStaffAdd = await utils.isCmd('staff add', ec.text);
+    const isStaffRemove = await utils.isCmd('staff remove', ec.text);
     const isMessage =
       testMessage &&
       !isNew &&
@@ -65,7 +69,9 @@ const app_mentions = (app, store) => {
       !isDelete &&
       !isIssue &&
       !isAssignAdd &&
-      !isAssignRemove;
+      !isAssignRemove &&
+      !isStaffAdd &&
+      !isStaffRemove;
 
     // @rota new "[rotation]" [optional description]
     if (isNew) {
@@ -126,6 +132,14 @@ const app_mentions = (app, store) => {
     // @rota "[rotation]" assign remove "[@user]"
     else if (isAssignRemove) {
       cmdAssignRemove(app, event, context, ec, utils, store, msgText, errHandler);
+    }
+    // @rota "[rotation]" staff add [@user]
+    else if (isStaffAdd) {
+      cmdStaffAdd(app, event, context, ec, utils, store, msgText, errHandler);
+    }
+    // @rota "[rotation]" staff remove [@user]
+    else if (isStaffRemove) {
+      cmdStaffRemove(app, event, context, ec, utils, store, msgText, errHandler);
     }
     // @rota "[rotation]" free form message for on-call user
     else if (isMessage) {

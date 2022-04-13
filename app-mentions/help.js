@@ -5,9 +5,11 @@
 ------------------*/
 module.exports = async (app, ec, utils, helpBlocks, msgText, errHandler) => {
   try {
-    const result = await app.client.chat.postMessage({
+    const result = await app.client.chat.postEphemeral({
       token: ec.botToken,
       channel: ec.channelID,
+      user: ec.sentByUserID,
+      text: '',
       blocks: helpBlocks()
     });
   }

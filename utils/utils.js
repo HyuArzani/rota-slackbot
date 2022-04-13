@@ -58,6 +58,14 @@ const utils = {
     // @rota "[rotation]" assign remove [@username]
     // Removes a user from the assign list
     'assign remove': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign remove) "(<@U[<@>A-Z0-9,\s]+?>)"$/g,
+    // @rota "[rotation]" staff add [@username, @username, @username]
+    // Accepts a space-separated list of usernames to staff a rotation
+    // List of mentions has to start with <@U and end with > but can contain spaces, commas, multiple user mentions
+    'staff add': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (staff add) (<@U[<@>A-Z0-9,\s]+?>)$/g,
+    // @rota "[rotation]" staff add [@username, @username, @username]
+    // Accepts a space-separated list of usernames to staff a rotation
+    // List of mentions has to start with <@U and end with > but can contain spaces, commas, multiple user mentions
+    'staff remove': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (staff remove) (<@U[<@>A-Z0-9,\s]+?>)$/g,
   },
   /**
    * Clean up message text so it can be tested / parsed
@@ -225,6 +233,24 @@ const utils = {
           rotation: res[2],
           staff: this.getStaffArray(res[4])
         };
+      }
+      // Rotation, command, list of space-separated usermentions
+      // Proofed to accommodate use of comma+space separation and minor whitespace typos
+      else if (cmd === 'staff add') {
+        return {
+          rotation: res[2],
+          command: res[3],
+          staff: this.getStaffArray(res[4])
+        }
+      }
+      // Rotation, command, list of space-separated usermentions
+      // Proofed to accommodate use of comma+space separation and minor whitespace typos
+      else if (cmd === 'staff remove') {
+        return {
+          rotation: res[2],
+          command: res[3],
+          staff: this.getStaffArray(res[4])
+        }
       }
     }
     // If not a properly formatted command, return null
