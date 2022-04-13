@@ -40,6 +40,11 @@ require('./app-home-opened')(app);
 require('./app-mentions')(app, store);
 
 /*------------------
+    APP COMMAND
+------------------*/
+require('./app-command')(app, store);
+
+/*------------------
      START APP
 ------------------*/
 (async () => {
