@@ -1,6 +1,6 @@
 /*------------------
   HELP
-  @rota help
+  /rota help
   Provides instructions on how to use Rota
 ------------------*/
 module.exports = async (app, ec, utils, helpBlocks, msgText, errHandler) => {

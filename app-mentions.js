@@ -7,13 +7,9 @@ const cmdDescription = require('./app-mentions/description');
 const cmdStaff = require('./app-mentions/staff');
 const cmdResetStaff = require('./app-mentions/reset-staff');
 const cmdDelete = require('./app-mentions/delete');
-const cmdAbout = require('./app-mentions/about');
 const cmdAssign = require('./app-mentions/assign');
 const cmdAssignNext = require('./app-mentions/assign-next');
-const cmdWho = require('./app-mentions/who');
 const cmdUnassign = require('./app-mentions/unassign');
-const cmdList = require('./app-mentions/list');
-const cmdHelp = require('./app-mentions/help');
 const cmdMessage = require('./app-mentions/message');
 const cmdIssue = require('./app-mentions/issue');
 const cmdAssignAdd = require('./app-mentions/assign-add');
@@ -43,12 +39,8 @@ const app_mentions = (app, store) => {
     const isResetStaff = await utils.isCmd('reset staff', ec.text);
     const isAssign = await utils.isCmd('assign', ec.text);
     const isAssignNext = await utils.isCmd('assign next', ec.text);
-    const isWho = await utils.isCmd('who', ec.text);
-    const isAbout = await utils.isCmd('about', ec.text);
     const isUnassign = await utils.isCmd('unassign', ec.text);
     const isDelete = await utils.isCmd('delete', ec.text);
-    const isHelp = await utils.isCmd('help', ec.text);
-    const isList = await utils.isCmd('list', ec.text);
     const testMessage = await utils.isCmd('message', ec.text);
     const isIssue = await utils.isCmd('issue', ec.text);
     const isAssignAdd = await utils.isCmd('assign add', ec.text);
@@ -63,8 +55,6 @@ const app_mentions = (app, store) => {
       !isResetStaff &&
       !isAssign &&
       !isAssignNext &&
-      !isWho &&
-      !isAbout &&
       !isUnassign &&
       !isDelete &&
       !isIssue &&
@@ -93,10 +83,6 @@ const app_mentions = (app, store) => {
     else if (isDelete) {
       cmdDelete(app, event, context, ec, utils, store, msgText, errHandler);
     }
-    // @rota "[rotation]" about
-    else if (isAbout) {
-      cmdAbout(app, event, context, ec, utils, store, msgText, errHandler);
-    }
     // @rota "[rotation]" assign "[@user]" [handoff message]
     else if (isAssign) {
       cmdAssign(app, event, context, ec, utils, store, msgText, errHandler);
@@ -105,21 +91,9 @@ const app_mentions = (app, store) => {
     else if (isAssignNext) {
       cmdAssignNext(app, event, context, ec, utils, store, msgText, errHandler);
     }
-    // @rota "[rotation]" who
-    else if (isWho) {
-      cmdWho(app, event, context, ec, utils, store, msgText, errHandler);
-    }
     // @rota "[rotation]" unassign
     else if (isUnassign) {
       cmdUnassign(app, event, context, ec, utils, store, msgText, errHandler);
-    }
-    // @rota list
-    else if (isList) {
-      cmdList(app, ec, utils, msgText, errHandler);
-    }
-    // @rota help
-    else if (isHelp) {
-      cmdHelp(app, ec, utils, helpBlocks, msgText, errHandler);
     }
     // @rota "[rotation]" issue [message]
     else if (isIssue) {

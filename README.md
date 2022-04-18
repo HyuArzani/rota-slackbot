@@ -2,7 +2,7 @@
 
 Rota is a Slack app + bot I wrote for internal company use to manage team rotations. This app was built with the [Bolt JavaScript Slack app framework](https://github.com/slackapi/bolt).
 
-## Commands
+## Commands - Mentions
 
 * `@rota new "[new-rotation-name]" [description]` creates a new rotation; rotation names can contain _only_ lowercase letters, numbers, and hyphens. Technically the description is optional, but everyone will benefit if you provide one.
 * `@rota delete "[rotation]"` deletes the rotation completely (use with caution!).
@@ -16,12 +16,15 @@ Rota is a Slack app + bot I wrote for internal company use to manage team rotati
 * `@rota "[rotation]" assign remove "[@user]"` remove users to assigns list rotation; a space-separated list of usernames is expected as a parameter with usernames
 * `@rota "[rotation]" assign next [optional handoff message]` assigns the next person in the staff list to a rotation and, optionally, sends a DM to them with handoff information.
 * `@rota "[rotation]" unassign` removes the current user assignment for a rotation.
-* `@rota "[rotation]" who` reports the name of a rotation's assigned user.
-* `@rota "[rotation]" about` displays the rotation's description and on-call user publicly, and displays the staff list only to the user who issued the commend (this is to prevent excessive notifications for everyone on staff).
 * `@rota "[rotation]" [message]` sends a direct message to the on-call users for the rotation, notifying them that your message needs attention.
 * `@rota "[rotation]" issue [message]` sends a direct message to the all staff users for the rotation, notifying them that your message needs attention.
-* `@rota list` displays a list of all currently known rotations.
-* `@rota help` shows how to use the bot.
+
+## Commands - Slash Commands
+
+* `/rota list` displays a list of all currently known rotations.
+* `/rota "[rotation]" who` reports the name of a rotation's assigned user.
+* `/rota "[rotation]" about` displays the rotation's description and on-call user publicly, and displays the staff list only to the user who issued the commend (this is to prevent excessive notifications for everyone on staff).
+* `/rota help` shows how to use the bot.
 
 ## Tips
 
