@@ -2,3 +2,8 @@
 node_modules
 .vscode
 *.afphoto
+package-lock.json
+yarn.lock
+ngrok
+credential
+.vercel
