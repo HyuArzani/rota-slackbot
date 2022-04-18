@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 const rotaSchema = new Schema({
   name: { type: String, required: true },
   description: String,
-  assigned: String,
+  assigned: [String],
   staff: [String]
 });
 

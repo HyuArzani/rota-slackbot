@@ -16,10 +16,13 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
       if (staffList && staffList.length) {
         // Staff list exists and is not an empty array
         const lastAssigned = rotationObj.assigned;
-        const lastAssignedIndex = staffList.indexOf(lastAssigned);
-        const lastIndex = staffList.length - 1; // last available position in staff list
-        const firstUser = staffList[0];
-        let usermention;
+        // change logic single to multi
+        // const lastAssignedIndex = staffList.indexOf(lastAssigned);
+        // const lastIndex = staffList.length - 1; // last available position in staff list
+        // const firstUser = staffList[0];
+        let unassigned = staffList.filter((user) => lastAssigned.indexOf(user) === -1);
+        // change logic single to multi
+        /* let usermention;
         if (lastAssigned) {
           // There's a user currently assigned
           if (lastAssignedIndex > -1 && lastAssignedIndex < lastIndex) {
@@ -33,39 +36,45 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
         } else {
           // No previous assignment; start at beginning of staff list
           usermention = firstUser;
+        } */
+        // if all users are assigned, assign again
+        if(unassigned.length === 0) {
+          unassigned = lastAssigned;
         }
         // Save assignment
-        const save = await store.saveAssignment(rotation, usermention);
-        // Send message to the channel about updated assignment
-        const result = await app.client.chat.postMessage(
-          utils.msgConfig(ec.botToken, ec.channelID, msgText.assignConfirm(usermention, rotation))
-        );
-        if (!!handoffMsg) {
-          // There is a handoff message
-          // Send DM to newly assigned user notifying them of handoff message
-          const oncallUserDMChannel = utils.getUserID(usermention);
-          const link = `https://${process.env.SLACK_TEAM}.slack.com/archives/${ec.channelID}/p${event.ts.replace('.', '')}`;
-          // Send DM to on-call user notifying them of the message that needs their attention
-          const sendDM = await app.client.chat.postMessage(
-            utils.msgConfigBlocks(ec.botToken, oncallUserDMChannel, msgText.assignDMHandoffBlocks(rotation, link, ec.sentByUserID, ec.channelID, handoffMsg))
+        const save = await store.saveAssignment(rotation, unassigned);
+        unassigned.map(async (user) => {
+          // Send message to the channel about updated assignment
+          const result = await app.client.chat.postEphemeral(
+            utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.assignConfirm(user, rotation))
           );
-          if (!!ec.sentByUserID && ec.sentByUserID !== 'USLACKBOT') {
-            // Send ephemeral message notifying assigner their handoff message was delivered via DM
-            const result = await app.client.chat.postEphemeral(
-              utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.assignHandoffConfirm(usermention, rotation))
+          if (!!handoffMsg) {
+            // There is a handoff message
+            // Send DM to newly assigned user notifying them of handoff message
+            const oncallUserDMChannel = utils.getUserID(user);
+            const link = `https://${process.env.SLACK_TEAM}.slack.com/archives/${ec.channelID}/p${event.ts.replace('.', '')}`;
+            // Send DM to on-call user notifying them of the message that needs their attention
+            const sendDM = await app.client.chat.postMessage(
+              utils.msgConfigBlocks(ec.botToken, oncallUserDMChannel, msgText.assignDMHandoffBlocks(rotation, link, ec.sentByUserID, ec.channelID, handoffMsg))
             );
+            if (!!ec.sentByUserID && ec.sentByUserID !== 'USLACKBOT') {
+              // Send ephemeral message notifying assigner their handoff message was delivered via DM
+              const result = await app.client.chat.postEphemeral(
+                utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.assignHandoffConfirm(usermention, rotation))
+              );
+            }
           }
-        }
+        });
       } else {
         // No staff list; cannot use "next"
-        const result = await app.client.chat.postMessage(
-          utils.msgConfig(ec.botToken, ec.channelID, msgText.assignNextError(rotation))
+        const result = await app.client.chat.postEphemeral(
+          utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.assignNextError(rotation))
         );
       }
     } else {
       // If rotation doesn't exist, send message in channel
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.assignError(rotation))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.assignError(rotation))
       );
     }
   }

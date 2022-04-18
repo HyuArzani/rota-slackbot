@@ -12,13 +12,13 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
       // If rotation exists, set staff to an empty array
       const save = await store.saveStaff(rotation, []);
       // Send message to confirm staff has been reset
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.resetStaffConfirm(rotation))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.resetStaffConfirm(rotation))
       );
     } else {
       // If rotation doesn't exist, send message saying nothing changed
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.resetStaffError(rotation))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.resetStaffError(rotation))
       );
     }
   }

@@ -21,7 +21,7 @@ const utils = {
     userID: /^<@([A-Z0-9]+?)[a-z|._\-]*?>$/g,
     // @rota "[rotation]" assign [@username] [optional handoff message]
     // Assigns a user to a rotation
-    assign: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign) (<@U[A-Z0-9]+?>)(.*)$/g,
+    assign: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign) "(<@U[<@>A-Z0-9,\s]+?>)"(.*)$/g,
     // @rota "[rotation]" assign next [optional handoff message]
     // Assigns a user to a rotation
     'assign next': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign next)(.*)$/g,
@@ -47,7 +47,41 @@ const utils = {
     // @rota "[rotation]" any other message
     // Message does not contain a command
     // Sends message text
-    message: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (.*)$/g
+    message: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (.*)$/g,
+    // @rota "[rotation]" issue any other message
+    // Message does not contain a command
+    // Sends message text
+    issue: /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (issue)(.*)$/g,
+    // @rota "[rotation]" assign add [@username]
+    // Adds a user to the assign list
+    'assign add': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign add) "(<@U[<@>A-Z0-9,\s]+?>)"$/g,
+    // @rota "[rotation]" assign remove [@username]
+    // Removes a user from the assign list
+    'assign remove': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (assign remove) "(<@U[<@>A-Z0-9,\s]+?>)"$/g,
+    // @rota "[rotation]" staff add [@username, @username, @username]
+    // Accepts a space-separated list of usernames to staff a rotation
+    // List of mentions has to start with <@U and end with > but can contain spaces, commas, multiple user mentions
+    'staff add': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (staff add) (<@U[<@>A-Z0-9,\s]+?>)$/g,
+    // @rota "[rotation]" staff add [@username, @username, @username]
+    // Accepts a space-separated list of usernames to staff a rotation
+    // List of mentions has to start with <@U and end with > but can contain spaces, commas, multiple user mentions
+    'staff remove': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (staff remove) (<@U[<@>A-Z0-9,\s]+?>)$/g,
+  },
+  // regex command
+  regexCommand: {
+    // @rota "[rotation]" who
+    // Responds stating who is on-call for a rotation
+    who: /^"([a-z0-9\-]+?)" (who)$/g,
+    // @rota "[rotation]" about
+    // Responds with description and mention of on-call for a rotation
+    // Sends ephemeral staff list (to save everyone's notifications)
+    about: /^"([a-z0-9\-]+?)" (about)$/g,
+    // @rota help
+    // Post help messaging
+    help: /^(help)$/g,
+    // @rota list
+    // List all rotations in store
+    list: /^(list)$/g,
   },
   /**
    * Clean up message text so it can be tested / parsed
@@ -90,10 +124,24 @@ const utils = {
    * @param {string} input mention text
    * @return {Promise<boolean>} does text match an existing command?
    */
-  async isCmd(cmd, input) {
+  async isCmd(cmd, input, isCommand) {
     const msg = utils.cleanText(input);
-    const regex = new RegExp(utils.regex[cmd]);
+    const regexTest = !isCommand ? utils.regex[cmd] : utils.regexCommand[cmd];
+    const regex = new RegExp(regexTest);
     return regex.test(msg);
+  },
+  /**
+   * Parse app mention command text
+   * @param {string} staffStr text command
+   * @return {Array<string>} containing user id
+   */
+  getStaffArray(staffStr) {
+    const cleanStr = staffStr.replace(/,/g, '').replace(/></g, '> <').trim();
+    const arr = cleanStr.split(' ');
+    const noEmpty = arr.filter(item => !!item !== false);   // Remove falsey values
+    const noDupes = new Set(noEmpty);                       // Remove duplicates
+    const cleanArr = [...noDupes];                          // Convert set back to array
+    return cleanArr || [];
   },
   /**
    * Parse app mention command text
@@ -115,7 +163,8 @@ const utils = {
         return {
           rotation: res[2],
           command: res[3],
-          user: res[4],
+          // user: res[4], // single parsing user
+          staff: this.getStaffArray(res[4]),
           handoff: res[5].trim()
         }
       }
@@ -130,18 +179,10 @@ const utils = {
       // Rotation, command, list of space-separated usermentions
       // Proofed to accommodate use of comma+space separation and minor whitespace typos
       else if (cmd === 'staff') {
-        const getStaffArray = (staffStr) => {
-          const cleanStr = staffStr.replace(/,/g, '').replace(/></g, '> <').trim();
-          const arr = cleanStr.split(' ');
-          const noEmpty = arr.filter(item => !!item !== false);   // Remove falsey values
-          const noDupes = new Set(noEmpty);                       // Remove duplicates
-          const cleanArr = [...noDupes];                          // Convert set back to array
-          return cleanArr || [];
-        };
         return {
           rotation: res[2],
           command: res[3],
-          staff: getStaffArray(res[4])
+          staff: this.getStaffArray(res[4])
         }
       }
       // Rotation, command, parameters
@@ -188,6 +229,78 @@ const utils = {
           command: cmd,
           rotation: res[2],
           message: res[3]
+        };
+      }
+      // Rotation, issue
+      else if (cmd === 'issue') {
+        return {
+          command: cmd,
+          rotation: res[2],
+          issue: res[3]
+        };
+      }
+      // Rotation, assign add
+      else if (cmd === 'assign add') {
+        return {
+          command: cmd,
+          rotation: res[2],
+          staff: this.getStaffArray(res[4])
+        };
+      }
+      // Rotation, assign remove
+      else if (cmd === 'assign remove') {
+        return {
+          command: cmd,
+          rotation: res[2],
+          staff: this.getStaffArray(res[4])
+        };
+      }
+      // Rotation, command, list of space-separated usermentions
+      // Proofed to accommodate use of comma+space separation and minor whitespace typos
+      else if (cmd === 'staff add') {
+        return {
+          rotation: res[2],
+          command: res[3],
+          staff: this.getStaffArray(res[4])
+        }
+      }
+      // Rotation, command, list of space-separated usermentions
+      // Proofed to accommodate use of comma+space separation and minor whitespace typos
+      else if (cmd === 'staff remove') {
+        return {
+          rotation: res[2],
+          command: res[3],
+          staff: this.getStaffArray(res[4])
+        }
+      }
+    }
+    // If not a properly formatted command, return null
+    // This should trigger error messaging
+    return null;
+  },
+  /**
+   * Parse app slash command text
+   * @param {string} cmd text command
+   * @param {object} e event object
+   * @return {Promise<object>} object containing rotation, command, user, data
+   */
+   async parseCmdSlash(cmd, e) {
+    const cleanText = utils.cleanText(e.text);
+    // Match text using regex associated with the passed command
+    const res = [...cleanText.matchAll(new RegExp(utils.regexCommand[cmd]))][0];
+    // Regex returned expected match appropriate for the command
+    if (res) {
+      // Rotation, command
+      if (cmd === 'about' || cmd === 'who')  {
+        return {
+          rotation: res[1],
+          command: cmd
+        };
+      }
+      // Command
+      else if (cmd === 'help' || cmd === 'list') {
+        return {
+          command: cmd
         };
       }
     }

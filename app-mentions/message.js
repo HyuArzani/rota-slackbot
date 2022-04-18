@@ -11,18 +11,11 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
     if (utils.rotationInList(rotation, ec.rotaList)) {
       const rotationObj = await store.getRotation(rotation);
       const oncallUser = rotationObj.assigned;
-
+      
       if (!!oncallUser) {
-        // If someone is assigned to concierge...
-        const link = `https://${process.env.SLACK_TEAM}.slack.com/archives/${ec.channelID}/p${event.ts.replace('.', '')}`;
-        const oncallUserDMChannel = utils.getUserID(oncallUser);
-        // Send DM to on-call user notifying them of the message that needs their attention
-        const sendDM = await app.client.chat.postMessage(
-          utils.msgConfig(ec.botToken, oncallUserDMChannel, msgText.dmToAssigned(rotation, ec.sentByUserID, ec.channelID, link))
-        );
         // Send message to the channel where help was requested notifying that assigned user was contacted
-        const sendChannelMsg = await app.client.chat.postMessage(
-          utils.msgConfig(ec.botToken, ec.channelID, msgText.confirmChannelMsg(rotation, ec.sentByUserID))
+        const sendChannelMsg = await app.client.chat.postEphemeral(
+          utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.confirmChannelMsg(rotation, ec.sentByUserID))
         );
         if (!!ec.sentByUserID && ec.sentByUserID !== 'USLACKBOT') {
           // Send ephemeral message (only visible to sender) telling them what to do if urgent
@@ -31,16 +24,25 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
             utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.confirmEphemeralMsg(rotation))
           );
         }
+        oncallUser.map(async (usermention) => {
+          // If someone is assigned to concierge...
+          const link = `https://${process.env.SLACK_TEAM}.slack.com/archives/${ec.channelID}/p${event.ts.replace('.', '')}`;
+          const oncallUserDMChannel = utils.getUserID(usermention);
+          // Send DM to on-call user notifying them of the message that needs their attention
+          const sendDM = await app.client.chat.postMessage(
+            utils.msgConfig(ec.botToken, oncallUserDMChannel, msgText.dmToAssigned(rotation, ec.sentByUserID, ec.channelID, link))
+          );
+        });
       } else {
         // Rotation is not assigned; give instructions how to assign
-        const result = await app.client.chat.postMessage(
-          utils.msgConfig(ec.botToken, ec.channelID, msgText.nobodyAssigned(rotation))
+        const result = await app.client.chat.postEphemeral(
+          utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.nobodyAssigned(rotation))
         );
       }
     } else {
       // Rotation doesn't exist
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.msgError(rotation))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.msgError(rotation))
       );
     }
   }
