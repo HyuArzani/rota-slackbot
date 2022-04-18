@@ -174,7 +174,8 @@ const homeBlocks = (userID, storeList) => {
     }
   ];
 
-  return introArr.concat(homeArr).concat(commandsArr).concat(tipsArr).concat(footerArr);
+  // return introArr.concat(homeArr).concat(commandsArr).concat(tipsArr).concat(footerArr);
+  return commandsArr;
 };
 
 module.exports = homeBlocks;
