@@ -1,11 +1,11 @@
 /*------------------
   WHO
-  @rota "[rotation]" who
+  /rota "[rotation]" who
   Reports who the assigned user is for a rotation
 ------------------*/
 module.exports = async (app, event, context, ec, utils, store, msgText, errHandler) => {
   try {
-    const pCmd = await utils.parseCmd('who', event, context);
+    const pCmd = await utils.parseCmdSlash('who', event, context);
     const rotation = pCmd.rotation;
 
     if (utils.rotationInList(rotation, ec.rotaList)) {

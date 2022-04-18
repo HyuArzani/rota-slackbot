@@ -1,6 +1,6 @@
 /*------------------
   LIST
-  @rota list
+  /rota list
   Lists all rotations, descriptions, and assignments
 ------------------*/
 module.exports = async (app, ec, utils, msgText, errHandler) => {

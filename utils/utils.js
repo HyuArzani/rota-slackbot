@@ -67,6 +67,22 @@ const utils = {
     // List of mentions has to start with <@U and end with > but can contain spaces, commas, multiple user mentions
     'staff remove': /^<@(U[A-Z0-9]+?)> "([a-z0-9\-]+?)" (staff remove) (<@U[<@>A-Z0-9,\s]+?>)$/g,
   },
+  // regex command
+  regexCommand: {
+    // @rota "[rotation]" who
+    // Responds stating who is on-call for a rotation
+    who: /^"([a-z0-9\-]+?)" (who)$/g,
+    // @rota "[rotation]" about
+    // Responds with description and mention of on-call for a rotation
+    // Sends ephemeral staff list (to save everyone's notifications)
+    about: /^"([a-z0-9\-]+?)" (about)$/g,
+    // @rota help
+    // Post help messaging
+    help: /^(help)$/g,
+    // @rota list
+    // List all rotations in store
+    list: /^(list)$/g,
+  },
   /**
    * Clean up message text so it can be tested / parsed
    * @param {string} msg original message text
@@ -108,17 +124,16 @@ const utils = {
    * @param {string} input mention text
    * @return {Promise<boolean>} does text match an existing command?
    */
-  async isCmd(cmd, input) {
+  async isCmd(cmd, input, isCommand) {
     const msg = utils.cleanText(input);
-    const regex = new RegExp(utils.regex[cmd]);
+    const regexTest = !isCommand ? utils.regex[cmd] : utils.regexCommand[cmd];
+    const regex = new RegExp(regexTest);
     return regex.test(msg);
   },
   /**
    * Parse app mention command text
-   * @param {string} cmd text command
-   * @param {object} e event object
-   * @param {object} ct context object
-   * @return {Promise<object>} object containing rotation, command, user, data
+   * @param {string} staffStr text command
+   * @return {Array<string>} containing user id
    */
   getStaffArray(staffStr) {
     const cleanStr = staffStr.replace(/,/g, '').replace(/></g, '> <').trim();
@@ -128,7 +143,13 @@ const utils = {
     const cleanArr = [...noDupes];                          // Convert set back to array
     return cleanArr || [];
   },
-
+  /**
+   * Parse app mention command text
+   * @param {string} cmd text command
+   * @param {object} e event object
+   * @param {object} ct context object
+   * @return {Promise<object>} object containing rotation, command, user, data
+   */
   async parseCmd(cmd, e, ct) {
     const cleanText = utils.cleanText(e.text);
     // Match text using regex associated with the passed command
@@ -251,6 +272,36 @@ const utils = {
           command: res[3],
           staff: this.getStaffArray(res[4])
         }
+      }
+    }
+    // If not a properly formatted command, return null
+    // This should trigger error messaging
+    return null;
+  },
+  /**
+   * Parse app slash command text
+   * @param {string} cmd text command
+   * @param {object} e event object
+   * @return {Promise<object>} object containing rotation, command, user, data
+   */
+   async parseCmdSlash(cmd, e) {
+    const cleanText = utils.cleanText(e.text);
+    // Match text using regex associated with the passed command
+    const res = [...cleanText.matchAll(new RegExp(utils.regexCommand[cmd]))][0];
+    // Regex returned expected match appropriate for the command
+    if (res) {
+      // Rotation, command
+      if (cmd === 'about' || cmd === 'who')  {
+        return {
+          rotation: res[1],
+          command: cmd
+        };
+      }
+      // Command
+      else if (cmd === 'help' || cmd === 'list') {
+        return {
+          command: cmd
+        };
       }
     }
     // If not a properly formatted command, return null

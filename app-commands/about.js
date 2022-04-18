@@ -1,11 +1,11 @@
 /*------------------
   ABOUT
-  @rota "[rotation]" about
+  /rota "[rotation]" about
   Provides description and assignment for specified rotation
 ------------------*/
 module.exports = async (app, event, context, ec, utils, store, msgText, errHandler) => {
   try {
-    const pCmd = await utils.parseCmd('about', event, context);
+    const pCmd = await utils.parseCmdSlash('about', event, context);
     const rotation = pCmd.rotation;
 
     if (utils.rotationInList(rotation, ec.rotaList)) {

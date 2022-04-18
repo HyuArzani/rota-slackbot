@@ -27,13 +27,6 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": ':information_source: `@rota "[rotation-name]" about` *publicly displays the description and currently on-call user* for a rotation. The *staff list* is also displayed, but only to the user who requested info (to avoid unnecessary user notifications).'
-    }
-  },
-  {
-    "type": "section",
-    "text": {
-      "type": "mrkdwn",
       "text": ':writing_hand: `@rota "[rotation-name]" description [new description]` *updates the description* for a rotation.'
     }
   },
@@ -97,21 +90,7 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": ':bust_in_silhouette: `@rota "[rotation-name]" who` *reports the name of the person* who is on duty for a rotation.'
-    }
-  },
-  {
-    "type": "section",
-    "text": {
-      "type": "mrkdwn",
       "text": ':eject: `@rota "[rotation-name]" unassign` *removes the current assignment* for a rotation.'
-    }
-  },
-  {
-    "type": "section",
-    "text": {
-      "type": "mrkdwn",
-      "text": ":clipboard: `@rota list` *displays a list* of all rotations I\'m keeping track of at the moment."
     }
   },
   {
@@ -125,7 +104,28 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": ":question: `@rota help` shows how to interact with me."
+      "text": ":clipboard: `/rota list` *displays a list* of all rotations I\'m keeping track of at the moment."
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':bust_in_silhouette: `/rota "[rotation-name]" who` *reports the name of the person* who is on duty for a rotation.'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':information_source: `/rota "[rotation-name]" about` *publicly displays the description and currently on-call user* for a rotation. The *staff list* is also displayed, but only to the user who requested info (to avoid unnecessary user notifications).'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ":question: `/rota help` shows how to interact with me."
     }
   }
 ];
