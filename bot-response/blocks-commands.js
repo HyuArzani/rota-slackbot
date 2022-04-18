@@ -27,13 +27,6 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": ':information_source: `@rota "[rotation-name]" about` *publicly displays the description and currently on-call user* for a rotation. The *staff list* is also displayed, but only to the user who requested info (to avoid unnecessary user notifications).'
-    }
-  },
-  {
-    "type": "section",
-    "text": {
-      "type": "mrkdwn",
       "text": ':writing_hand: `@rota "[rotation-name]" description [new description]` *updates the description* for a rotation.'
     }
   },
@@ -48,6 +41,20 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
+      "text": ':busts_in_silhouette: `@rota "[rotation-name]" staff add [@user1 @user2 @user3]` *add a staff list* for a rotation. It expects a space-separated list of user mentions. _(Duplicates will be removed)_'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':busts_in_silhouette: `@rota "[rotation-name]" staff remove [@user1 @user2 @user3]` *remove a staff list* for a rotation. It expects a space-separated list of user mentions.'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
       "text": ':ghost: `@rota "[rotation-name]" reset staff` *removes all users* from a rotation staff list. _Use with caution!_'
     }
   },
@@ -55,7 +62,21 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": ':information_desk_person: `@rota "[rotation-name]" assign [@user] [optional handoff message]` *assigns a user to a rotation*. Optionally, I can also deliver handoff information at the start of a rotation.'
+      "text": ':information_desk_person: `@rota "[rotation-name]" assign "[@user]" [optional handoff message]` *assigns a user to a rotation*. Optionally, I can also deliver handoff information at the start of a rotation.'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':information_desk_person: `@rota "[rotation-name]" assign add "[@user]"` *add users to assign list in a rotation*.'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':information_desk_person: `@rota "[rotation-name]" assign remove "[@user]"` *remove users from assign list in a rotation*.'
     }
   },
   {
@@ -69,21 +90,7 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": ':bust_in_silhouette: `@rota "[rotation-name]" who` *reports the name of the person* who is on duty for a rotation.'
-    }
-  },
-  {
-    "type": "section",
-    "text": {
-      "type": "mrkdwn",
       "text": ':eject: `@rota "[rotation-name]" unassign` *removes the current assignment* for a rotation.'
-    }
-  },
-  {
-    "type": "section",
-    "text": {
-      "type": "mrkdwn",
-      "text": ":clipboard: `@rota list` *displays a list* of all rotations I\'m keeping track of at the moment."
     }
   },
   {
@@ -97,7 +104,28 @@ const commandsBlocks = [
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": ":question: `@rota help` shows how to interact with me."
+      "text": ":clipboard: `/rota list` *displays a list* of all rotations I\'m keeping track of at the moment."
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':bust_in_silhouette: `/rota "[rotation-name]" who` *reports the name of the person* who is on duty for a rotation.'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ':information_source: `/rota "[rotation-name]" about` *publicly displays the description and currently on-call user* for a rotation. The *staff list* is also displayed, but only to the user who requested info (to avoid unnecessary user notifications).'
+    }
+  },
+  {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": ":question: `/rota help` shows how to interact with me."
     }
   }
 ];

@@ -20,6 +20,12 @@ const msgText = {
   staffConfirm: (rotation) => {
     return ':busts_in_silhouette: The *' + rotation + '* rotation staff list has been saved! You can now use `@rota "' + rotation + '" assign next` to rotate assignments.\nWhen using `next`, if the currently on-call person is not in the staff list, the assignment will default to the _first person_ in the rotation.\n_(Note: I remove duplicates. If you want someone to do additional shifts, you\'ll need to do a username assignment.)_';
   },
+  staffAddConfirm: (usermention, rotation) => {
+    return `:information_desk_person: ${usermention} is now on-call for the *${rotation}* rotation.`;
+  },
+  staffRemoveConfirm: (usermention, rotation) => {
+    return `:information_desk_person: ${usermention} is no longer staff for the *${rotation}* rotation.`;
+  },
   staffEmpty: () => {
     return `:disappointed: I didn't understand that staff list. To save staff, please make sure you pass me a space-separated list of valid usernames.\n_(Note: I can also understand a comma+space separated list, but that's just more typing for you!)_`;
   },
@@ -60,7 +66,21 @@ const msgText = {
   assignConfirm: (usermention, rotation) => {
     return `:information_desk_person: ${usermention} is now on-call for the *${rotation}* rotation.`;
   },
+  assignRemoveConfirm: (usermention, rotation) => {
+    return `:information_desk_person: ${usermention} is no longer on-call for the *${rotation}* rotation.`;
+  },
   assignDMHandoffBlocks: (rotation, link, sentByUserID, channelID, handoffMsg) => {
+    if(!handoffMsg) {
+      return [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": `:telephone: You are now on-call for the *${rotation}* rotation`
+          }
+        },
+      ];
+    }
     return [
       {
         "type": "section",
@@ -99,11 +119,14 @@ const msgText = {
   listReport: (list) => {
     let msgStr = '';
     const assignment = (item) => {
-      return !!item.assigned ? ' (`' + item.assigned + '`)' : ' (_unassigned_)';
+      return !!item.assigned ? ' (`' + item.assigned.join(' ') + '`)' : ' (_unassigned_)';
+    };
+    const staff = (item) => {
+      return !!item.staff ? ' (`' + item.staff.join(' ') + '`)' : ' (_no_staff_)';
     };
     for (const rotation in list) {
       const rota = list[rotation];
-      msgStr = msgStr + `• *${rota.name}*: ${rota.description}${assignment(rota)}\n`;
+      msgStr = msgStr + `• *${rota.name}*: ${staff(rota)}, assign: ${rota.description}${assignment(rota)}\n`;
     }
     return `:clipboard: Here are all the rotations I know about:\n${msgStr}`;
   },
@@ -111,7 +134,7 @@ const msgText = {
     return ':clipboard: There are no rotations saved right now. To create one, tell me `@rota new "[rotation-name]" [description]`.';
   },
   whoReport: (usermention, rotation) => {
-    return ':bust_in_silhouette: `' + usermention + '` is on duty for the *' + rotation + '* rotation. To notify them directly, use `@rota "' + rotation + '" [message]`.';
+    return ':bust_in_silhouette: `' + usermention.join(' ') + '` is on duty for the *' + rotation + '* rotation. To notify them directly, use `@rota "' + rotation + '" [message]`.';
   },
   nobodyAssigned: (rotation) => {
     return ':ghost: Nobody is currently assigned to the *' + rotation + '* rotation. To assign someone, use `@rota "' + rotation + '" assign [@user] [optional handoff message]` or assign the next person in the rotation staff list with `@rota "' + rotation + '" assign next [optional handoff message]`.';
@@ -130,9 +153,16 @@ const msgText = {
   },
   confirmChannelMsg: (rotation, sentByUserID) => {
     if (sentByUserID) {
-      return `:speech_balloon: The on-call user for *${rotation}* has been notified about <@${sentByUserID}>'s message.`;
+      return `:speech_balloon: The on-call users for *${rotation}* has been notified about <@${sentByUserID}>'s message.`;
     } else {
-      return `:speech_balloon: The on-call user for *${rotation}* has been notified.`;
+      return `:speech_balloon: The on-call users for *${rotation}* has been notified.`;
+    }
+  },
+  confirmChannelIssue: (rotation, sentByUserID) => {
+    if (sentByUserID) {
+      return `:speech_balloon: The staff for *${rotation}* has been notified about <@${sentByUserID}>'s message.`;
+    } else {
+      return `:speech_balloon: The staff for *${rotation}* has been notified.`;
     }
   },
   confirmEphemeralMsg: (rotation) => {

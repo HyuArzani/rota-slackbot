@@ -11,13 +11,13 @@ module.exports = async (app, event, context, ec, utils, store, msgText, errHandl
     if (utils.rotationInList(rotation, ec.rotaList)) {
       // If rotation exists, delete from store completely
       const del = await store.deleteRotation(rotation);
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.deleteConfirm(rotation))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.deleteConfirm(rotation))
       );
     } else {
       // If rotation doesn't exist, send message saying nothing changed
-      const result = await app.client.chat.postMessage(
-        utils.msgConfig(ec.botToken, ec.channelID, msgText.deleteError(rotation))
+      const result = await app.client.chat.postEphemeral(
+        utils.msgConfigEph(ec.botToken, ec.channelID, ec.sentByUserID, msgText.deleteError(rotation))
       );
     }
   }
